@@ -21,7 +21,7 @@ public class Spending implements Serializable{
 
 	private Integer id;
 	private String name;
-	private Float value;
+	private Double value;
 	private LocalDate date;
 	private Category category;
 	
@@ -44,11 +44,11 @@ public class Spending implements Serializable{
 	}
 	
 	@NotNull
-	public Float getValue() {
+	public Double getValue() {
 		return value;
 	}
 	
-	public void setValue(Float value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 	

@@ -3,11 +3,12 @@ package be.qde.spring.spending.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ import be.qde.spring.spending.api.repository.UserRepository;
 
 @RestController
 @RequestMapping("/users/")
-public class UserController {
+public class UserController extends AuthenticationController {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -30,21 +31,35 @@ public class UserController {
 		return this.userRepository.findAll();
 	}
 	
-	@PostMapping
+	@PostMapping()
 	public User addUser(@RequestBody User user) {
+		user.setPassword(this.passwordEncoder.encode(user.getPassword()));
 		return this.userRepository.save(user);
+	}
+	
+	@DeleteMapping("delete")
+	public void deleteUser() {
+		User user = this.getAuthenticatedUser();
+		this.userRepository.delete(user);
+	}
+	
+	@PutMapping
+	public User updateUser(@RequestBody User user) {
+		User authenticatedUser = this.getAuthenticatedUser();
+		authenticatedUser.setEmail(user.getEmail());
+		authenticatedUser.setUsername(user.getUsername());
+		authenticatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+		return this.userRepository.save(authenticatedUser);
 	}
 	
 	@GetMapping("self")
 	public User getUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
-		return this.userRepository.findByUsername(username);
+		return this.getAuthenticatedUser();
+	}
+	
+	@GetMapping("{userId}")
+	public User getUser(@PathVariable Integer userId) {
+		return this.userRepository.findOne(userId);
 	}
 
-	@PostMapping("sign-up")
-	public void signUp(@RequestBody User user) {
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		this.userRepository.save(user);
-	}
 }
