@@ -13,41 +13,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import be.qde.spring.spending.api.entity.Category;
-import be.qde.spring.spending.api.entity.User;
-import be.qde.spring.spending.api.repository.CategoryRepository;
-import be.qde.spring.spending.api.repository.UserRepository;
+import be.qde.spring.spending.api.service.CategoryService;
 
 @RestController
 @RequestMapping("/categories/")
 public class CategoryController extends AuthenticationController {
 
 	@Autowired
-	public CategoryRepository categoryRepository;
+	public CategoryService categoryService;
 	
-	@Autowired
-	public UserRepository userRepository;
 	
 	@GetMapping()
 	public List<Category> getAllCategories(){
-		User owner = this.getAuthenticatedUser();
-		return this.categoryRepository.findByOwner(owner);
+		return this.categoryService.readCategory(this.getAuthenticatedUser());
 	}
 	
 	@PostMapping()
 	public Category addCategory(@RequestBody Category category) {
-		category.setOwner(this.getAuthenticatedUser());
-		return this.categoryRepository.save(category);
+		return this.categoryService.createCategory(category, this.getAuthenticatedUser());
 	}
 	
 	@PutMapping()
 	public Category updateCategory(@RequestBody Category category) {
-		category.setOwner(this.getAuthenticatedUser());
-		return this.categoryRepository.save(category);
+		return this.categoryService.updateCategory(category, this.getAuthenticatedUser());
 	}
 	
 	@DeleteMapping("{categoryId}")
 	public void deleteCategory(@PathVariable Integer categoryId) {
-		this.categoryRepository.delete(categoryId);
+		this.categoryService.deleteCategory(categoryId);
 	}
-
 }

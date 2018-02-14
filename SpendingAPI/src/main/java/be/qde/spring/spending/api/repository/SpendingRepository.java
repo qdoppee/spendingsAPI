@@ -12,4 +12,8 @@ import be.qde.spring.spending.api.entity.Spending;
 public interface SpendingRepository extends JpaRepository<Spending, Integer>{
 
 	public List<Spending> findByCategoryIn(List<Category> categories);
+	
+	public void deleteByCategoryIn(List<Category> categories);
+
+	public void deleteByCategory(Category category);
 }
