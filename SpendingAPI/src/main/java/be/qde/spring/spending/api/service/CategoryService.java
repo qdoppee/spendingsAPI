@@ -5,12 +5,14 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import be.qde.spring.spending.api.entity.Category;
 import be.qde.spring.spending.api.entity.User;
 import be.qde.spring.spending.api.repository.CategoryRepository;
 import be.qde.spring.spending.api.repository.SpendingRepository;
 
+@Service
 public class CategoryService {
 
 	@Autowired
